@@ -1,6 +1,8 @@
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
+
 const ClientError = require('./exceptions/ClientError');
 
 // albums
@@ -33,7 +35,31 @@ const init = async () => {
     },
   });
 
-  // Registrasi Plugin
+  // Registrasi plugin eksternal
+  await server.register([
+    {
+      plugin: Jwt,
+    },
+  ]);
+
+  // Mendefinisikan strategi autentikasi jwt
+  server.auth.strategy('openmusic_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
+  });
+
+  // Registrasi plugin internal
   await server.register([
     {
       plugin: albums,

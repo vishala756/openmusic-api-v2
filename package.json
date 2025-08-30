@@ -23,6 +23,7 @@
   "homepage": "https://github.com/irfandwisamudra/openmusic-api-v2#readme",
   "dependencies": {
     "@hapi/hapi": "^21.4.3",
+    "@hapi/jwt": "^3.2.0",
     "auto-bind": "^4.0.0",
     "dotenv": "^17.2.1",
     "joi": "^18.0.1",
