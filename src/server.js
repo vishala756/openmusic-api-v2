@@ -82,6 +82,14 @@ const init = async () => {
         validator: PlaylistsValidator,
       },
     },
+    {
+      plugin: collaborations,
+      options: {
+        collaborationsService,
+        playlistsService,
+        validator: CollaborationsValidator,
+      },
+    },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
