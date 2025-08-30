@@ -48,7 +48,6 @@ class PlaylistsService {
   }
 
   async addSongToPlaylist(playlistId, songId) {
-    // Verifikasi songId (opsional tapi best practice)
     const songQuery = {
       text: 'SELECT id FROM songs WHERE id = $1',
       values: [songId],
@@ -67,6 +66,8 @@ class PlaylistsService {
     if (!result.rows[0].id) {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist');
     }
+
+    await this.addPlaylistActivity(playlistId, songId, 'add');
   }
 
   async getSongsFromPlaylist(playlistId) {
@@ -103,6 +104,31 @@ class PlaylistsService {
     if (!result.rows.length) {
       throw new InvariantError('Lagu gagal dihapus dari playlist');
     }
+
+    await this.addPlaylistActivity(playlistId, songId, 'delete');
+  }
+
+  async addPlaylistActivity(playlistId, songId, action) {
+    const id = `history-${nanoid(16)}`;
+    const query = {
+      text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5) RETURNING id',
+      values: [id, playlistId, songId, action],
+    };
+    await this._pool.query(query);
+  }
+
+  async getPlaylistActivities(playlistId) {
+    const query = {
+      text: `SELECT u.username, s.title, psa.action, psa.time
+            FROM playlist_song_activities psa
+            JOIN users u ON psa.user_id = u.id
+            JOIN songs s ON psa.song_id = s.id
+            WHERE psa.playlist_id = $1
+            ORDER BY psa.time ASC`,
+      values: [playlistId],
+    };
+    const result = await this._pool.query(query);
+    return result.rows;
   }
 
   async verifyPlaylistOwner(id, owner) {
