@@ -67,7 +67,7 @@ class PlaylistsService {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist');
     }
 
-    await this.addPlaylistActivity(playlistId, songId, 'add');
+    await this.addPlaylistActivity(playlistId, songId, userId, 'add');
   }
 
   async getSongsFromPlaylist(playlistId) {
@@ -105,14 +105,15 @@ class PlaylistsService {
       throw new InvariantError('Lagu gagal dihapus dari playlist');
     }
 
-    await this.addPlaylistActivity(playlistId, songId, 'delete');
+    await this.addPlaylistActivity(playlistId, songId, userId, 'delete');
   }
 
-  async addPlaylistActivity(playlistId, songId, action) {
+  async addPlaylistActivity(playlistId, songId, userId, action) {
     const id = `history-${nanoid(16)}`;
+    const time = new Date().toISOString();
     const query = {
-      text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5) RETURNING id',
-      values: [id, playlistId, songId, action],
+      text: 'INSERT INTO playlist_song_activities(id, playlist_id, song_id, user_id, action, time) VALUES($1, $2, $3, $4, $5, $6)',
+      values: [id, playlistId, songId, userId, action, time],
     };
     await this._pool.query(query);
   }
