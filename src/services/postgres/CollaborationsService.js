@@ -1,13 +1,26 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class CollaborationsService {
-  constructor() {
+  constructor(usersService) {
     this._pool = new Pool();
+    this._usersService = usersService;
   }
 
   async addCollaboration(playlistId, userId) {
+    try {
+      await this._usersService.getUserById(userId);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundError(
+          'User tidak ditemukan, kolaborasi gagal ditambahkan'
+        );
+      }
+      throw error;
+    }
+
     const id = `collab-${nanoid(16)}`;
     const query = {
       text: 'INSERT INTO collaborations VALUES($1, $2, $3) RETURNING id',

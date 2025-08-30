@@ -13,7 +13,7 @@ class PlaylistsService {
   async addPlaylist({ name, owner }) {
     const id = `playlist-${nanoid(16)}`;
     const query = {
-      text: 'INSERT INTO playlists VALUES($1, $2, $3) RETURNING id',
+      text: 'INSERT INTO playlists (id, name, owner) VALUES($1, $2, $3) RETURNING id',
       values: [id, name, owner],
     };
     const result = await this._pool.query(query);
@@ -25,11 +25,12 @@ class PlaylistsService {
 
   async getPlaylists(owner) {
     const query = {
-      text: `SELECT playlists.id, playlists.name, users.username FROM playlists
-            LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
-            LEFT JOIN users ON playlists.owner = users.id
-            WHERE playlists.owner = $1 OR collaborations.user_id = $1
-            GROUP BY playlists.id, users.username`,
+      text: `SELECT p.id, p.name, u.username
+            FROM playlists p
+            LEFT JOIN users u ON p.owner = u.id
+            LEFT JOIN collaborations c ON p.id = c.playlist_id
+            WHERE p.owner = $1 OR c.user_id = $1
+            GROUP BY p.id, u.username`,
       values: [owner],
     };
     const result = await this._pool.query(query);
@@ -47,7 +48,22 @@ class PlaylistsService {
     }
   }
 
-  async addSongToPlaylist(playlistId, songId) {
+  async getPlaylistById(playlistId) {
+    const query = {
+      text: `SELECT p.id, p.name, u.username
+            FROM playlists p
+            JOIN users u ON p.owner = u.id
+            WHERE p.id = $1`,
+      values: [playlistId],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      throw new NotFoundError('Playlist tidak ditemukan');
+    }
+    return result.rows[0];
+  }
+
+  async addSongToPlaylist(playlistId, songId, userId) {
     const songQuery = {
       text: 'SELECT id FROM songs WHERE id = $1',
       values: [songId],
@@ -59,22 +75,22 @@ class PlaylistsService {
 
     const id = `playlistsong-${nanoid(16)}`;
     const query = {
-      text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
+      text: 'INSERT INTO playlist_songs (id, playlist_id, song_id) VALUES($1, $2, $3) RETURNING id',
       values: [id, playlistId, songId],
     };
     const result = await this._pool.query(query);
     if (!result.rows[0].id) {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist');
     }
-
     await this.addPlaylistActivity(playlistId, songId, userId, 'add');
   }
 
   async getSongsFromPlaylist(playlistId) {
     const playlistQuery = {
-      text: `SELECT playlists.id, playlists.name, users.username FROM playlists
-            LEFT JOIN users ON playlists.owner = users.id
-            WHERE playlists.id = $1`,
+      text: `SELECT p.id, p.name, u.username
+            FROM playlists p
+            JOIN users u ON p.owner = u.id
+            WHERE p.id = $1`,
       values: [playlistId],
     };
     const playlistResult = await this._pool.query(playlistQuery);
@@ -83,9 +99,10 @@ class PlaylistsService {
     }
 
     const songsQuery = {
-      text: `SELECT songs.id, songs.title, songs.performer FROM songs
-            JOIN playlist_songs ON songs.id = playlist_songs.song_id
-            WHERE playlist_songs.playlist_id = $1`,
+      text: `SELECT s.id, s.title, s.performer
+            FROM songs s
+            JOIN playlist_songs ps ON s.id = ps.song_id
+            WHERE ps.playlist_id = $1`,
       values: [playlistId],
     };
     const songsResult = await this._pool.query(songsQuery);
@@ -95,7 +112,7 @@ class PlaylistsService {
     return playlist;
   }
 
-  async deleteSongFromPlaylist(playlistId, songId) {
+  async deleteSongFromPlaylist(playlistId, songId, userId) {
     const query = {
       text: 'DELETE FROM playlist_songs WHERE playlist_id = $1 AND song_id = $2 RETURNING id',
       values: [playlistId, songId],
@@ -104,7 +121,6 @@ class PlaylistsService {
     if (!result.rows.length) {
       throw new InvariantError('Lagu gagal dihapus dari playlist');
     }
-
     await this.addPlaylistActivity(playlistId, songId, userId, 'delete');
   }
 
